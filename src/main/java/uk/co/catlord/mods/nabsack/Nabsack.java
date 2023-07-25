@@ -32,15 +32,11 @@ public class Nabsack implements ModInitializer {
 				return ActionResult.PASS;
 			}
 
-			LOGGER.info("Entity used: " + entity.toString());
-
 			ItemStack itemStack = player.getStackInHand(hand);
 
 			if (!Utils.isEmptyNabsack(itemStack)) {
 				return ActionResult.PASS;
 			}
-
-			LOGGER.info("Nabsack used");
 
 			NbtCompound nabsackTag = itemStack.getOrCreateNbt();
 			NbtCompound entityTag = new NbtCompound();
@@ -66,9 +62,6 @@ public class Nabsack implements ModInitializer {
 
 			nabsackTag.put("Items", itemsList);
 
-
-			LOGGER.info("Entity saved to Nabsack");
-
 			entity.remove(RemovalReason.DISCARDED);
 
 			return ActionResult.SUCCESS;
@@ -79,15 +72,11 @@ public class Nabsack implements ModInitializer {
 				return ActionResult.PASS;
 			}
 
-			LOGGER.info("Block used: " + hitResult.toString());
-
 			ItemStack itemStack = player.getStackInHand(hand);
 
 			if (!Utils.isNabsackLike(itemStack)) {
 				return ActionResult.PASS;
 			}
-
-			LOGGER.info("Nabsack used");
 
 			NbtCompound nabsackTag = itemStack.getOrCreateNbt();
 
@@ -98,8 +87,6 @@ public class Nabsack implements ModInitializer {
 			NbtCompound entityTag = nabsackTag.getCompound("StoredEntity");
 
 			EntityType<?> type = EntityType.get(entityTag.getString("id")).orElse(null);
-
-			LOGGER.info("Entity type: " + type.toString());
 
 			BlockPos spawnAt = new BlockPos(
 				(int) Math.floor(hitResult.getPos().x),
@@ -130,8 +117,6 @@ public class Nabsack implements ModInitializer {
 				return ActionResult.FAIL;
 			}
 
-			LOGGER.info("Entity spawned from Nabsack");
-
 			nabsackTag.remove("StoredEntity");
 			nabsackTag.remove("Items");
 
@@ -144,8 +129,6 @@ public class Nabsack implements ModInitializer {
 			if (!Utils.isServer(world)) {
 				return TypedActionResult.pass(itemStack);
 			}
-
-			LOGGER.info("Item used");
 
 			if (!Utils.isFullNabsack(itemStack)) {
 				return TypedActionResult.pass(itemStack);
