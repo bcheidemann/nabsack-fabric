@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "nabsack",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "Nabsack",
   "description": "Use the bundle as a nabsack to carry around mobs",
   "authors": [
