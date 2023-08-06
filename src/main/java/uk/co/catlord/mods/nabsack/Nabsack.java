@@ -27,10 +27,20 @@ import net.minecraft.world.World;
 
 public class Nabsack implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("nabsack");
+	public static Config config;
 
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Starting Nabsack mod...");
+
+		try {
+			config = Config.loadConfig();
+		}
+		catch (Exception e) {
+			LOGGER.error("Failed to load config", e);
+			LOGGER.error("Nabsack mod failed to start");
+			return;
+		}
 		
 		UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
 			if (!Utils.isServer(world)) {
@@ -80,6 +90,10 @@ public class Nabsack implements ModInitializer {
 	}
 
 	private ActionResult handleUseNabsackOnEntity(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult, ItemStack handItemStack) {
+		if (!config.isEntityTypeWhitelisted(entity.getType())) {
+			return ActionResult.PASS;
+		}
+
 		if (handItemStack.getOrCreateNbt().contains("Items")) {
 			return ActionResult.PASS;
 		}
@@ -127,7 +141,7 @@ public class Nabsack implements ModInitializer {
 		);
 
 		try {
-			spawnedEntity.getClass().getMethod("readCustomDataFromNbt", NbtCompound.class).invoke(spawnedEntity, entityTag);
+			spawnedEntity.getClass().getDeclaredMethod(getReadCustomDataFromNbtMethodName(), NbtCompound.class).invoke(spawnedEntity, entityTag);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
 				| SecurityException e) {
 			LOGGER.error("Could not read custom data from NBT");
@@ -143,5 +157,13 @@ public class Nabsack implements ModInitializer {
 		player.setStackInHand(hand, new ItemStack(Items.BUNDLE));
 
 		return ActionResult.SUCCESS;
+	}
+
+	private String getReadCustomDataFromNbtMethodName() {
+		if (config.development) {
+			return "readCustomDataFromNbt";
+		}
+
+		return "method_5749";
 	}
 }
