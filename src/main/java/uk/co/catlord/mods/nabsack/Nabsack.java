@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.EntityType;
@@ -18,6 +19,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -60,6 +62,20 @@ public class Nabsack implements ModInitializer {
 			}
 			
 			return ActionResult.PASS;
+		});
+
+		UseItemCallback.EVENT.register((player, world, hand) -> {
+			if (!Utils.isServer(world)) {
+				return TypedActionResult.pass(null);
+			}
+
+			ItemStack itemStack = player.getStackInHand(hand);
+
+			if (Utils.isFullNabsack(itemStack)) {
+				return TypedActionResult.fail(null);
+			}
+
+			return TypedActionResult.pass(null);
 		});
 	}
 
